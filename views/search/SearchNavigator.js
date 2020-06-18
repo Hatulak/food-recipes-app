@@ -19,8 +19,8 @@ export default class SearchNavigator extends React.Component {
   render() {
     return (
       <NavigationContainer independent={true}>
-        <Drawer.Navigator initialRouteName="SearchByQueryStack">
-          <Drawer.Screen name="SearchByQueryStack">{props => <SearchByQueryStack {...props} uid={this.state.uid} />}</Drawer.Screen>
+        <Drawer.Navigator initialRouteName="Search recipe by name">
+          <Drawer.Screen name="Search recipe by name and cuisine/diet">{props => <SearchByQueryStack {...props} uid={this.state.uid} />}</Drawer.Screen>
           {/* <Drawer.Screen name="SearchByQuery" component={SearchByQuery} /> */}
           {/* <Drawer.Screen name="Notifications" component={NotificationsScreen} /> */}
           <Drawer.Screen name="Logout" component={LogoutScreen} />

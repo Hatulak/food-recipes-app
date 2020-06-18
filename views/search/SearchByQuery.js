@@ -79,7 +79,7 @@ export default class SearchByQuery extends React.Component {
 
   renderFooter = () => {
     if (!this.state.fetching_data) {
-      if (this.state.limit) return <Text>That's all</Text>;
+      if (this.state.limit) return <Text style={styles.text}>No results</Text>;
       return null;
     }
     return <ActivityIndicator style={{ color: "#000" }} />;
@@ -109,15 +109,23 @@ export default class SearchByQuery extends React.Component {
     return (
       <View style={styles.container}>
         <View>
-          <TextInput
-            value={this.state.query}
-            style={styles.input}
-            value={this.state.email}
-            placeholder="Recipe name"
-            onChangeText={(text) => {
-              this.setState({ query: text });
-            }}
-          ></TextInput>
+          <View style={styles.queryContainer}>
+            <TextInput
+              value={this.state.query}
+              style={styles.input}
+              value={this.state.email}
+              placeholder="Recipe name"
+              onChangeText={(text) => {
+                this.setState({ query: text });
+              }}
+            ></TextInput>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => this.showResults()}
+            >
+              <Text style={styles.buttonText}>Search</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.checkboxContainer}>
             <CheckBox
               value={this.state.cuisineCheck}
@@ -198,12 +206,6 @@ export default class SearchByQuery extends React.Component {
           ) : (
             <View></View>
           )}
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => this.showResults()}
-          >
-            <Text style={styles.buttonText}>Search</Text>
-          </TouchableOpacity>
         </View>
         <View style={styles.list}>
           {this.state.loading ? null : (
@@ -215,6 +217,7 @@ export default class SearchByQuery extends React.Component {
                   props={this.props}
                   result={result}
                   uid={this.props.uid}
+                  navigation={this.props.navigation}
                 />
               )}
               ListFooterComponent={this.renderFooter}
@@ -231,23 +234,50 @@ export default class SearchByQuery extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    paddingHorizontal: 20,
+    flex: 1,
+    backgroundColor: "#eee",
     // alignItems: "center",
-    // justifyContent: "center",
+  },
+  queryContainer:{
+    flexDirection: "row",
+    marginTop: 5,
   },
   checkboxContainer: {
     flexDirection: "row",
   },
   input: {
-    width: 300,
-    height: 40,
     borderWidth: 1,
+    paddingLeft: 20,
+    width: 250,
+    height: 40,
+    borderColor: "gray",
+    color: "black",
+    borderRadius: 10,
+    borderStyle: "solid",
+    backgroundColor: "#fff",
+    // margin: 5,
   },
   label: {
-    margin: 6,
+    marginTop: 5,
   },
-  list: {
-    flex: 1,
-    padding: 1,
+  text: {
+    padding: 5,
+    marginTop: 10,
+    textAlign: "justify",
+    fontSize: 17,
+  },
+  button: {
+    borderRadius: 10,
+    width: 100,
+    backgroundColor: "#aeaeae",
+    padding: 7,
+    alignItems: "center",
+    marginLeft: 5,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff",
   },
 });
