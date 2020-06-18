@@ -10,11 +10,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import HomeScreen from "./views/HomeScreen";
 import LoginScreen from "./views/auth/LoginScreen";
 import RegisterScreen from "./views/auth/RegisterScreen";
 import LogoutScreen from "./views/auth/LogoutScreen";
 import ForgotPasswordScreen from "./views/auth/ForgotPasswordScreen";
+import SearchNavigator from "./views//search/SearchNavigator";
 import ApiKeys from "./constants/ApiKeys";
 import firebase from "firebase";
 import { AppLoading } from "expo";
@@ -60,7 +60,7 @@ export default class App extends React.Component {
               tabBarIcon: ({ focused, color, size }) => {
                 let iconName;
 
-                if (route.name === "Home") {
+                if (route.name === "SearchNavigator") {
                   iconName = focused
                     ? "ios-information-circle"
                     : "ios-information-circle-outline";
@@ -77,7 +77,7 @@ export default class App extends React.Component {
               inactiveTintColor: "gray",
             }}
           >
-            <Tab.Screen name="Home">{props => <HomeScreen {...props} uid={this.state.uid} />}</Tab.Screen>
+            <Tab.Screen name="SearchNavigator">{props => <SearchNavigator {...props} uid={this.state.uid} />}</Tab.Screen>
             <Tab.Screen name="Settings">{props => <SettingsScreen {...props} uid={this.state.uid} />}</Tab.Screen>
           </Tab.Navigator>
         </NavigationContainer>
@@ -109,24 +109,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export function HomeScreen2({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Button
-        onPress={() => navigation.navigate("Notifications")}
-        title="Go to notifications"
-      />
-    </View>
-  );
-}
-
-export function NotificationsScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Button onPress={() => navigation.goBack()} title="Go back home" />
-    </View>
-  );
-}
 
 export function SettingsScreen() {
   return (
