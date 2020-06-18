@@ -11,15 +11,6 @@ export default class LogoutScreen extends React.Component {
   }
 
   render() {
-    return <View style={styles.container}></View>;
+    return <View></View>;
   }
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 10,
-    paddingTop: 10,
-    flex: 1,
-    backgroundColor: "#eee",
-  },
-});

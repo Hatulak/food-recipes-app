@@ -9,11 +9,12 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  FlatList,
+  ActivityIndicator,
 } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator } from "@react-navigation/drawer";
+import SearchItemRow from "./components/SearchItemRow";
 
-const Drawer = createDrawerNavigator();
+const RESULTS_NUMBER = 10;
 const ApiKey = "&apiKey=02240cf11e1a4c2ea8f3b3d41c4d4d05";
 
 export default class SearchByQuery extends React.Component {
@@ -27,6 +28,10 @@ export default class SearchByQuery extends React.Component {
       dietCheck: false,
       diet: "Vegetarian",
       results: [],
+      offset: 0,
+      fetching_data: false,
+      loading: true,
+      limit: false,
     };
   }
 
@@ -38,24 +43,66 @@ export default class SearchByQuery extends React.Component {
       ? "&cuisine=" + this.state.cuisine
       : "";
     let dietString = this.state.dietCheck ? "&diet=" + this.state.diet : "";
-    console.log(dietString);
+    this.setState({ fetching_data: true });
     fetch(
       "https://api.spoonacular.com/recipes/search" +
         "?query=" +
         this.state.query +
         cuisineString +
         dietString +
-        "&number=2" +
+        "&number=" +
+        RESULTS_NUMBER +
+        "&offset=" +
+        this.state.offset +
         ApiKey
     )
       .then((response) => response.json())
       .then((json) => {
-        this.setState({results: json.results})
-        console.log(json);
+        if (json.results.length === 0) {
+          this.setState({ limit: true });
+        }
+        this.setState({
+          results: [...this.state.results, ...json.results],
+          offset: this.state.offset + RESULTS_NUMBER,
+          loading: false,
+          fetching_data: false,
+        });
       })
       .catch((error) => {
         console.log(error);
+        this.setState({
+          loading: false,
+          fetching_data: false,
+        });
       });
+  };
+
+  renderFooter = () => {
+    if (!this.state.fetching_data) {
+      if (this.state.limit) return <Text>That's all</Text>;
+      return null;
+    }
+    return <ActivityIndicator style={{ color: "#000" }} />;
+  };
+
+  renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 2,
+          width: "100%",
+          backgroundColor: "#CED0CE",
+        }}
+      />
+    );
+  };
+
+  handleLoadMore = () => {
+    if (!this.state.limit) {
+      if (!this.state.fetching_data) {
+        this.showResults();
+      }
+    }
   };
 
   render() {
@@ -158,6 +205,25 @@ export default class SearchByQuery extends React.Component {
             <Text style={styles.buttonText}>Search</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.list}>
+          {this.state.loading ? null : (
+            <FlatList
+              data={this.state.results}
+              keyExtractor={(result) => result.id.toString()}
+              renderItem={(result) => (
+                <SearchItemRow
+                  props={this.props}
+                  result={result}
+                  uid={this.props.uid}
+                />
+              )}
+              ListFooterComponent={this.renderFooter}
+              ItemSeparatorComponent={this.renderSeparator}
+              onEndReached={this.handleLoadMore}
+              onEndReachedThreshold={0.4}
+            />
+          )}
+        </View>
       </View>
     );
   }
@@ -173,11 +239,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   input: {
-    width: 200,
+    width: 300,
     height: 40,
     borderWidth: 1,
   },
   label: {
     margin: 6,
+  },
+  list: {
+    flex: 1,
+    padding: 1,
   },
 });

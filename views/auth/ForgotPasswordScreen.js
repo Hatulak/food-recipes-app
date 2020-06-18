@@ -1,5 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, Button, View, TextInput, Alert } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import { CommonActions } from "@react-navigation/native";
 import firebase from "firebase";
 
@@ -36,7 +37,7 @@ export default class ForgotPasswordScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>Forgot Password</Text>
+        <Text style={styles.text}>Forgot Password</Text>
         <TextInput
           style={styles.input}
           value={this.state.email}
@@ -47,8 +48,12 @@ export default class ForgotPasswordScreen extends React.Component {
             this.setState({ email: text });
           }}
         />
-        <Button title="Reset Password" onPress={this.onResetPasswordPress} />
-        <Button title="Back to Login" onPress={this.onBackToLoginPress} />
+        <TouchableOpacity style={styles.button} onPress={this.onResetPasswordPress}>
+          <Text style={styles.buttonText}>Reset Password</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={this.onBackToLoginPress}>
+          <Text style={styles.buttonText}>Back to Login</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -60,10 +65,37 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     flex: 1,
     backgroundColor: "#eee",
+    alignItems: "center",
   },
   input: {
-    width: 200,
-    height: 40,
     borderWidth: 1,
+    paddingLeft: 20,
+    width: 250,
+    height: 40,
+    borderColor: "gray",
+    color: "black",
+    borderRadius: 10,
+    borderStyle: "solid",
+    backgroundColor: "#fff",
+    margin: 5,
+  },
+  text: {
+    padding: 5,
+    marginTop: 10,
+    textAlign: "justify",
+    fontSize: 17,
+  },
+  button: {
+    borderRadius: 10,
+    width: 250,
+    backgroundColor: "#aeaeae",
+    padding: 7,
+    alignItems: "center",
+    margin: 5,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#fff"
   },
 });
