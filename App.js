@@ -15,6 +15,8 @@ import RegisterScreen from "./views/auth/RegisterScreen";
 import LogoutScreen from "./views/auth/LogoutScreen";
 import ForgotPasswordScreen from "./views/auth/ForgotPasswordScreen";
 import SearchNavigator from "./views//search/SearchNavigator";
+import FavoritesStack from './views/favorites/FavoritesStack';
+import StepperStack from './views/stepper/StepperStack';
 import ApiKeys from "./constants/ApiKeys";
 import firebase from "firebase";
 import { AppLoading } from "expo";
@@ -38,7 +40,7 @@ export default class App extends React.Component {
         this.setState({ isAuthenticationReady: true });
         this.setState({ isAuthenticated: !!user });
       } else {
-        this.setState({ uid: '' });
+        this.setState({ uid: "" });
         this.setState({ isAuthenticationReady: true });
         this.setState({ isAuthenticated: !!user });
       }
@@ -61,11 +63,11 @@ export default class App extends React.Component {
                 let iconName;
 
                 if (route.name === "SearchNavigator") {
-                  iconName = focused
-                    ? "ios-information-circle"
-                    : "ios-information-circle-outline";
-                } else if (route.name === "Settings") {
-                  iconName = focused ? "ios-list-box" : "ios-list";
+                  iconName = "ios-search";
+                } else if (route.name === "FavoritesStack") {
+                  iconName = focused ? "ios-heart" : "ios-heart-empty";
+                } else if (route.name === "StepperStack") {
+                  iconName = "ios-walk";
                 }
 
                 // You can return any component that you like here!
@@ -77,8 +79,15 @@ export default class App extends React.Component {
               inactiveTintColor: "gray",
             }}
           >
-            <Tab.Screen name="SearchNavigator">{props => <SearchNavigator {...props} uid={this.state.uid} />}</Tab.Screen>
-            <Tab.Screen name="Settings">{props => <SettingsScreen {...props} uid={this.state.uid} />}</Tab.Screen>
+            <Tab.Screen name="SearchNavigator" options={{title: 'Search'}}>
+              {(props) => <SearchNavigator {...props} uid={this.state.uid} />}
+            </Tab.Screen>
+            <Tab.Screen name="FavoritesStack" options={{title: 'Favorites'}}>
+              {(props) => <FavoritesStack {...props} uid={this.state.uid} />}
+            </Tab.Screen>
+            <Tab.Screen name="StepperStack" options={{title: 'Burn your meals'}}>
+              {(props) => <StepperStack {...props} uid={this.state.uid} />}
+            </Tab.Screen>
           </Tab.Navigator>
         </NavigationContainer>
       );
@@ -108,12 +117,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-
-export function SettingsScreen() {
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Settings!</Text>
-    </View>
-  );
-}

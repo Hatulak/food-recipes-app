@@ -20,70 +20,24 @@ import firebase from "firebase";
 const ApiKeyQ = "?apiKey=02240cf11e1a4c2ea8f3b3d41c4d4d05";
 const ApiKey = "&apiKey=02240cf11e1a4c2ea8f3b3d41c4d4d05";
 
-export default class ResultDetailsScreen extends React.Component {
+export default class FavoriteRecipeDetails extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       uid: props.route.params.uid,
-      recipeId: props.route.params.recipeId,
-      loading: true,
-      recipeDetails: {},
-      instructions: [],
-      ingredients: [],
-      calories: null,
+      recipe: props.route.params.recipe,
       isRecipeInFavorites: false,
     };
-    this.getRecipeDetails();
-    this.getInstructions();
-    this.checkIfInFav();
   }
 
-  getRecipeDetails = () => {
-    fetch(
-      "https://api.spoonacular.com/recipes/" +
-        this.state.recipeId +
-        "/information?includeNutrition=true" +
-        ApiKey
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        this.setState({
-          recipeDetails: json,
-          calories: json.nutrition.nutrients.find(
-            (obj) => obj.title === "Calories"
-          ),
-          ingredients: json.extendedIngredients,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  getInstructions = () => {
-    fetch(
-      "https://api.spoonacular.com/recipes/" +
-        this.state.recipeId +
-        "/analyzedInstructions" +
-        ApiKeyQ
-    )
-      .then((response) => response.json())
-      .then((json) => {
-        // console.log(json);
-        this.setState({
-          instructions: json,
-          loading: false,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  componentDidMount() {
+    this.checkIfInFav();
+  }
 
   checkIfInFav = () => {
     firebase
       .database()
-      .ref(`fav/${this.state.uid}/${this.state.recipeId}`)
+      .ref(`fav/${this.state.uid}/${this.state.recipe.recipeId}`)
       .once("value", (snapshot) => {
         if (snapshot.exists()) {
           this.setState({
@@ -103,17 +57,17 @@ export default class ResultDetailsScreen extends React.Component {
   addToFavorites = () => {
     firebase
       .database()
-      .ref(`fav/${this.state.uid}/${this.state.recipeId}`)
+      .ref(`fav/${this.state.uid}/${this.state.recipe.recipeId}`)
       .push({
-        recipeId: this.state.recipeId,
-        imageUri: this.state.recipeDetails.image,
-        title: this.state.recipeDetails.title,
-        readyInMinutes: this.state.recipeDetails.readyInMinutes,
-        servings: this.state.recipeDetails.servings,
-        healthScore: this.state.recipeDetails.healthScore,
-        calories: this.state.calories.amount,
-        ingredients: this.state.ingredients,
-        instructions: this.state.instructions,
+        recipeId: this.state.recipe.recipeId,
+        imageUri: this.state.recipe.imageUri,
+        title: this.state.recipe.title,
+        readyInMinutes: this.state.recipe.readyInMinutes,
+        servings: this.state.recipe.servings,
+        healthScore: this.state.recipe.healthScore,
+        calories: this.state.recipe.calories,
+        ingredients: this.state.recipe.ingredients,
+        instructions: this.state.recipe.instructions,
       })
       .then((data) => {
         this.setState({
@@ -128,7 +82,7 @@ export default class ResultDetailsScreen extends React.Component {
   removeFromFavorites = () => {
     firebase
       .database()
-      .ref(`fav/${this.state.uid}/${this.state.recipeId}`)
+      .ref(`fav/${this.state.uid}/${this.state.recipe.recipeId}`)
       .remove()
       .then((data) => {
         this.setState({
@@ -141,37 +95,35 @@ export default class ResultDetailsScreen extends React.Component {
   };
 
   render() {
-    if (this.state.loading) {
-      return (
-        <View style={styles.container}>
-          <ActivityIndicator size="large" color="#0000ff" />
-        </View>
-      );
-    }
+    // if (this.state.loading) {
+    //   return (
+    //     <View style={styles.container}>
+    //       <ActivityIndicator size="large" color="#0000ff" />
+    //     </View>
+    //   );
+    // }
     return (
       <ScrollView style={styles.container}>
         <View>
           <View style={styles.checkboxContainer}>
             <Image
-              source={{ uri: this.state.recipeDetails.image }}
+              source={{ uri: this.state.recipe.imageUri }}
               style={{ width: 200, height: 200 }}
             />
             <View>
-              <Text style={styles.title}>{this.state.recipeDetails.title}</Text>
+              <Text style={styles.title}>{this.state.recipe.title}</Text>
               <Text style={styles.info}>
-                Preparation time: {this.state.recipeDetails.readyInMinutes} min
+                Preparation time: {this.state.recipe.readyInMinutes} min
               </Text>
               <Text style={styles.info}>
-                Servings: {this.state.recipeDetails.servings}
+                Servings: {this.state.recipe.servings}
               </Text>
               <Text style={styles.info}>
-                Health score: {this.state.recipeDetails.healthScore}/100
+                Health score: {this.state.recipe.healthScore}/100
               </Text>
-              {this.state.calories ? (
-                <Text style={styles.info}>
-                  Calories: {this.state.calories.amount} cal
-                </Text>
-              ) : null}
+              <Text style={styles.info}>
+                Calories: {this.state.recipe.calories} cal
+              </Text>
               {this.state.isRecipeInFavorites ? (
                 <TouchableOpacity
                   onPress={this.removeFromFavorites}
@@ -201,12 +153,12 @@ export default class ResultDetailsScreen extends React.Component {
           </View>
         </View>
         <Text style={{ fontWeight: "bold" }}>Ingredients: </Text>
-        {this.state.ingredients.map((ing, i) => (
+        {this.state.recipe.ingredients.map((ing, i) => (
           <Text key={ing.id + i}>{ing.original}</Text>
         ))}
         <Text style={{ fontWeight: "bold" }}>Steps: </Text>
-        {this.state.instructions ? (
-          this.state.instructions.map((ins, j) => {
+        {this.state.recipe.instructions ? (
+          this.state.recipe.instructions.map((ins, j) => {
             return (
               <View key={j + 200000}>
                 <Text>{ins.name}</Text>
