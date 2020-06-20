@@ -45,20 +45,6 @@ export default class FavoritesScreen extends React.Component {
       });
   }
 
-  //   getFavorites = () => {
-  //     firebase
-  //       .database()
-  //       .ref(`fav/${this.state.uid}`)
-  //       .on("value", (snapshot) => {
-  //         var _temp = [];
-  //         snapshot.forEach((item) => {
-  //           item.forEach((nested) => {
-  //             _temp.push(nested.val());
-  //           });
-  //         });
-  //         this.state.favRecipes = _temp;
-  //       });
-  //   };
 
   renderSeparator = () => {
     return (

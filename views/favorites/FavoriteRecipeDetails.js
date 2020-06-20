@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import firebase from "firebase";
 
 const ApiKeyQ = "?apiKey=02240cf11e1a4c2ea8f3b3d41c4d4d05";
@@ -94,14 +95,30 @@ export default class FavoriteRecipeDetails extends React.Component {
       });
   };
 
+  addToMeals = () => {
+    var calories = Math.ceil(
+      this.state.recipe.calories / this.state.recipe.servings
+    );
+    firebase
+      .database()
+      .ref(`meals/${this.state.uid}`)
+      .push({
+        recipeId: this.state.recipe.recipeId,
+        title: this.state.recipe.title,
+        calories: calories,
+        stepsLeft: calories * 20,
+      })
+      .then((data) => {
+        this.setState({
+          isRecipeInFavorites: true,
+        });
+      })
+      .catch((error) => {
+        console.log("error", error);
+      });
+  };
+
   render() {
-    // if (this.state.loading) {
-    //   return (
-    //     <View style={styles.container}>
-    //       <ActivityIndicator size="large" color="#0000ff" />
-    //     </View>
-    //   );
-    // }
     return (
       <ScrollView style={styles.container}>
         <View>
@@ -149,6 +166,12 @@ export default class FavoriteRecipeDetails extends React.Component {
                   />
                 </TouchableOpacity>
               )}
+              <TouchableOpacity onPress={this.addToMeals} style={styles.fav}>
+                <Text style={{ marginRight: 5, fontWeight: "bold" }}>
+                  I ate one serving!
+                </Text>
+                <MaterialCommunityIcons name="food" size={24} color="black" />
+              </TouchableOpacity>
             </View>
           </View>
         </View>
