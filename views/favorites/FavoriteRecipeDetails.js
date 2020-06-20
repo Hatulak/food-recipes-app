@@ -109,9 +109,6 @@ export default class FavoriteRecipeDetails extends React.Component {
         stepsLeft: calories * 20,
       })
       .then((data) => {
-        this.setState({
-          isRecipeInFavorites: true,
-        });
       })
       .catch((error) => {
         console.log("error", error);
